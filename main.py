@@ -1,10 +1,11 @@
-import sqlalchemy, psycopg2, config
+import config
+import psycopg2
+import sqlalchemy
 from sqlalchemy.orm import sessionmaker
-from DB.db_models import Match, User, FavoriteList, UnFavoriteList, SearchingList
-from DB.class_DBapp import DBapp
-from VK.class_VKapp import VKapp
 from vk_api.longpoll import VkEventType
-
+from DB.class_DBapp import DBapp
+from DB.db_models import Match, User, FavoriteList, UnFavoriteList, SearchingList
+from VK.class_VKapp import VKapp
 
 conn = psycopg2.connect(database=config.db_name, user=config.db_login, password=config.db_password)
 DSN = f'postgresql://{config.db_login}:{config.db_password}@localhost:5432/{config.db_name}'
