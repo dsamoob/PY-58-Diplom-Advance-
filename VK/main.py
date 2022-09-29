@@ -9,6 +9,7 @@ from pprint import pprint
 # with open('token/tokenVK.txt', 'r', ) as fileVK:
 #     tokenVK = fileVK.read()
 
+
 if __name__ == '__main__':
     bot = VK(token_user=config.vk_token_prog, tokenVK_Group=config.vk_token_my)
     # a = bot.foto_dict(481468488)
