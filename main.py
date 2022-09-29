@@ -4,7 +4,7 @@ from DB.db_models import Match, User, FavoriteList, UnFavoriteList, SearchingLis
 from DB.class_DBapp import DBapp
 import psycopg2
 import json
-from VK.class_VKapp import VK
+from VK.class_VKapp import VKapp
 from vk_api.longpoll import VkEventType
 import config
 
