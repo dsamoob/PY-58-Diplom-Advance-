@@ -4,7 +4,7 @@ import vk_api
 from vk_api.longpoll import VkLongPoll
 
 
-class VK:
+class VKapp:
     def __init__(self, token_user, tokenVK_Group, version='5.131'):
         self.token_user = token_user
         self.tokenVK_Group = tokenVK_Group
@@ -141,24 +141,28 @@ class VK:
                         city_id = None
                         if serch_user.get('city') is not None:
                             city_id = serch_user['city']['id']
-                        tot_dict[serch_user['id']] = {'first_name': serch_user['first_name'],
-                                'last_name': serch_user['last_name'],
-                                'sex': serch_user['sex'],
-                                'ege': datetime.now().year - datetime.strptime(serch_user['bdate'], '%d.%m.%Y').year,
-                                'city': city_id}
+                        tot_dict[serch_user['id']] = {
+                            'first_name': serch_user['first_name'],
+                            'last_name': serch_user['last_name'],
+                            'sex': serch_user['sex'],
+                            'age': datetime.now().year - datetime.strptime(serch_user['bdate'], '%d.%m.%Y').year,
+                            'city': city_id
+                        }
             return tot_dict
 
     def search_user(self, user_id, down_adge=1, up_adge=1, count=1000):  # Вывод найденных пользователе
         """ПОИСК ПОЛЬЗОВАТЕЛЯ ПО ДАННЫМ"""
         url = f'https://api.vk.com/method/users.search'
-        params = {'sex': self.get_reverse_sex(user_id),
-                  'age_from': self.get_age(user_id) - down_adge,
-                  'age_to': self.get_age(user_id) + up_adge,
-                  'city': self.get_id_city(user_id),
-                  'status': '1' or '6',
-                  'has_photo': '1',
-                  'sort': '0',
-                  'fields': 'is_closed, id, first_name, last_name, city, bdate, sex',
-                  'count': count}
+        params = {
+            'sex': self.get_reverse_sex(user_id),
+            'age_from': self.get_age(user_id) - down_adge,
+            'age_to': self.get_age(user_id) + up_adge,
+            'city': self.get_id_city(user_id),
+            'status': '1' or '6',
+            'has_photo': '1',
+            'sort': '0',
+            'fields': 'is_closed, id, first_name, last_name, city, bdate, sex',
+            'count': count
+        }
         response = requests.get(url, params={**self.params_User, **params}).json()
         return response

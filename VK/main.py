@@ -1,6 +1,6 @@
 import json
-from VK.class_VK import VK
-from vk_api.longpoll import VkLongPoll, VkEventType
+from VK.class_VKapp import VK
+from vk_api.longpoll import VkEventType
 import config
 from pprint import pprint
 # from keyboard import sended_keybord

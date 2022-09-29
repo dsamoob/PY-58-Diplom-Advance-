@@ -19,8 +19,8 @@ if __name__ == '__main__':
     # create_tables(engine)
     # [dbapp.add_user(i) for i in data.users]
     dbapp.add_to_searching_list(path)
-    print(dbapp.get_previous_search())
-    print(dbapp.get_next_search())
+    print(dbapp.get_previous_search()[0])
+    print(dbapp.get_next_search()[0])
     print(dbapp.get_next_search())
     print(dbapp.get_previous_search())
     print(dbapp.get_next_search())

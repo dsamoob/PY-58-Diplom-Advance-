@@ -52,13 +52,13 @@ class DBapp():
         self.session.commit()
         self.last = self.session.query(func.max(self.searchinglist.id)).all()[0][0]
 
-    def get_next_search(self):
+    def get_next_search(self):  # Возвращает  следующее значение бд списоком из 6и наименований
         if self.offset != self.last:
             self.offset += 1
             return self.__query_searching_list()
         return 'no more'
 
-    def get_previous_search(self):
+    def get_previous_search(self): # Возвращает предыдущее значение бд списоком из 6и наименований
         if self.offset != 1 and self.offset != 0:
             self.offset -= 1
             return self.__query_searching_list()
