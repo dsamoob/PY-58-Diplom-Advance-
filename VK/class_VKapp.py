@@ -2,7 +2,7 @@ from datetime import datetime
 import requests
 import vk_api
 from vk_api.longpoll import VkLongPoll
-
+import json
 
 class VKapp:
     def __init__(self, token_user, tokenVK_Group, version='5.131'):
@@ -166,3 +166,8 @@ class VKapp:
         }
         response = requests.get(url, params={**self.params_User, **params}).json()
         return response
+
+    def create_file(self, total_dict):
+        with open(f"total.json", "w", encoding='UTF-8') as write_file:
+            json.dump(total_dict, write_file)
+        print(f'Создан файл: total.json')
