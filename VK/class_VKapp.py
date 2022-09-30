@@ -101,7 +101,7 @@ class VKapp:
         # time.sleep(0.3)
         return response.json()
 
-    def foto_dict(self, user_id, list_album='profile'):  # словарь вида {like:url}
+    def foto_dict(self, user_id, list_album='profile'):  # словарь вида {like:owenID_fotoID}
         dict_foto = {}
         print(f'Ищем фото{user_id}')
         album = list_album
@@ -114,12 +114,7 @@ class VKapp:
                 like = item['likes']['count']
                 post_id = item['id']
                 max_size = 0
-                for foto in item['sizes']:
-                    foto_size = int(foto['height']) * int(foto['width'])
-                    if foto_size >= max_size:  # выбираем самое большое из группы одинаковых
-                        max_size = foto_size
-                        # dict_foto[like] = [foto['url'], post_id]
-                        dict_foto[like] = foto['url']
+                dict_foto[like] = f"{user_id}_{item['id']}"
             offset += len(user_foto['response']['items'])
             if offset >= user_foto['response']['count']:
                 break
@@ -138,15 +133,15 @@ class VKapp:
             for serch_user in response['response']['items']:
                 if (serch_user['is_closed'] == False) and (serch_user.get('bdate') is not None):
                     if len(serch_user.get('bdate').split('.')) > 2:
-                        city_id = None
+                        city_title = None
                         if serch_user.get('city') is not None:
-                            city_id = serch_user['city']['id']
+                            city_title = serch_user['city']['title']
                         tot_dict[serch_user['id']] = {
                             'first_name': serch_user['first_name'],
                             'last_name': serch_user['last_name'],
                             'sex': serch_user['sex'],
                             'age': datetime.now().year - datetime.strptime(serch_user['bdate'], '%d.%m.%Y').year,
-                            'city': city_id
+                            'city': city_title
                         }
             return tot_dict
 
@@ -171,3 +166,11 @@ class VKapp:
         with open(f"total.json", "w", encoding='UTF-8') as write_file:
             json.dump(total_dict, write_file)
         print(f'Создан файл: total.json')
+
+    def send_foto(self, user_id, user_id_foto, message=''):
+        for key, value in self.foto_dict(user_id_foto).items():
+            self.vk.method('messages.send', {'user_id': user_id,
+                                                 'message': message,
+                                                 'attachment': f'photo{value}',
+                                                 'random_id': 0})
+
