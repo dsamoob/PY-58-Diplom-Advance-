@@ -47,23 +47,17 @@ if __name__ == '__main__':
                     vkapp.send_msg(user_id,
                                    f'{result[1]} {result[2]}\n'
                                    f'https://vk.com/id{result[0]}\n'
-                                   f'место для фото1\n'
-                                   f'место для фото2\n'
-                                   f'место для фото3'
                                    )
+                    vkapp.send_foto(user_id=user_id, user_id_foto=result[0])
                     result = dbapp.get_next_search()
                     vkapp.send_msg(user_id,
                                    f'{result[1]} {result[2]}\n'
                                    f'https://vk.com/id{result[0]}\n'
-                                   f'место для фото1\n'
-                                   f'место для фото2\n'
-                                   f'место для фото3'
                                    )
+                    vkapp.send_foto(user_id=user_id, user_id_foto=result[0])
                     result = dbapp.get_next_search()
                     vkapp.send_msg(user_id,
                                    f'{result[1]} {result[2]}\n'
                                    f'https://vk.com/id{result[0]}\n'
-                                   f'место для фото1\n'
-                                   f'место для фото2\n'
-                                   f'место для фото3'
                                    )
+                    vkapp.send_foto(user_id=user_id, user_id_foto=result[0])
