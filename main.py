@@ -4,7 +4,7 @@ import sqlalchemy
 from sqlalchemy.orm import sessionmaker
 from vk_api.longpoll import VkEventType
 from DB.class_DBapp import DBapp
-from DB.db_models import Match, User, FavoriteList, UnFavoriteList, SearchingList
+from DB.db_models import create_tables, Match, User, FavoriteList, UnFavoriteList, SearchingList
 from VK.class_VKapp import VKapp
 
 conn = psycopg2.connect(database=config.db_name, user=config.db_login, password=config.db_password)
@@ -18,6 +18,8 @@ path = 'total.json'
 
 
 if __name__ == '__main__':
+
+    create_tables(engine)
     for event in vkapp.longpoll.listen():
         if event.type == VkEventType.MESSAGE_NEW:
             if event.to_me:

@@ -1,7 +1,7 @@
 import sqlalchemy
 from sqlalchemy.orm import sessionmaker
 import config as config
-from DB.db_models import Match, User, FavoriteList, UnFavoriteList, SearchingList
+from DB.db_models import create_tables, Match, User, FavoriteList, UnFavoriteList, SearchingList
 from DB.class_DBapp import DBapp
 import psycopg2
 
@@ -16,7 +16,7 @@ path = '/Users/egorbelov/GitHub/PY-58-Diplom-Advance/VK/total.json'
 
 
 if __name__ == '__main__':
-    # create_tables(engine)
+    create_tables(engine)
     # [dbapp.add_user(i) for i in data.users]
     dbapp.add_to_searching_list(path)
     print(dbapp.get_previous_search()[0])
