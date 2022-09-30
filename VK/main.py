@@ -1,18 +1,15 @@
 import json
-from VK.class_VKapp import VK
+from VK.class_VKapp import VKapp
 from vk_api.longpoll import VkEventType
 import config
 from pprint import pprint
-# from keyboard import sended_keybord
-# with open('token/tokenVK_Group.txt', 'r', ) as fileYA:
-#     tokenVK_Group = fileYA.read()
-# with open('token/tokenVK.txt', 'r', ) as fileVK:
-#     tokenVK = fileVK.read()
+# from keyboard import sender
+
 
 
 if __name__ == '__main__':
-    bot = VK(token_user=config.vk_token_prog, tokenVK_Group=config.vk_token_my)
-    # a = bot.foto_dict(481468488)
+    bot = VKapp(token_user=config.vk_token_prog, tokenVK_Group=config.vk_token_my)
+    # a = bot.foto_dict(1)
     # print(a)
     # print(list(bot.total_dict(54934926))[0])
     def create_file(total_dict):
@@ -24,7 +21,7 @@ if __name__ == '__main__':
             if event.to_me:
                 msg = event.text.lower()
                 user_id = event.user_id
-                # sended_keybord(user_id, msg.lower())
+                # sender(user_id, msg.lower())
                 if msg == 'hi':
                     bot.send_msg(user_id, 'hellow froend')
                     bot.send_msg(user_id, 'how a u?')
@@ -42,7 +39,10 @@ if __name__ == '__main__':
                 if msg == 'search':
                     total_dict = bot.total_dict(user_id)
                     bot.send_msg(user_id, f'https://vk.com/id{(list(total_dict)[0])}')
+                    bot.send_foto(user_id=user_id, user_id_foto=(list(total_dict)[0]))
                     bot.send_msg(user_id, f'https://vk.com/id{(list(total_dict)[1])}')
+                    bot.send_foto(user_id=user_id, user_id_foto=(list(total_dict)[1]))
                     bot.send_msg(user_id, f'https://vk.com/id{(list(total_dict)[2])}')
+                    bot.send_foto(user_id=user_id, user_id_foto=(list(total_dict)[2]))
                     print(total_dict)
                     create_file(total_dict)
