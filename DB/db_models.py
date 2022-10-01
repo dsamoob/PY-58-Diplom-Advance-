@@ -1,13 +1,13 @@
 import sqlalchemy as sq
-from sqlalchemy.orm import declarative_base, relationship
-
+from sqlalchemy.orm import declarative_base
 Base = declarative_base()
 
 
 class SearchingList(Base):
     __tablename__ = "searching_list"
     id = sq.Column(sq.Integer, primary_key=True)
-    vk_id = sq.Column(sq.String(length=20), unique=True)
+    user_id = sq.Column(sq.String(length=20))
+    match_id = sq.Column(sq.String(length=20), unique=True)
     first_name = sq.Column(sq.String(length=50))
     last_name = sq.Column(sq.String(length=50))
     sex = sq.Column(sq.String(length=10))
@@ -19,7 +19,7 @@ class User(Base):
     __tablename__ = "user"
 
     id = sq.Column(sq.Integer, primary_key=True)
-    user_vk_id = sq.Column(sq.String(length=80), unique=True)
+    vk_id = sq.Column(sq.String(length=80), unique=True)
 
     def __str__(self):
         return f'{self.id}: {self.user_vk_id}'
@@ -36,9 +36,9 @@ class Match(Base):
     edge = sq.Column(sq.String(length=10))
     city = sq.Column(sq.String(length=50))
 
-
     def __str__(self):
-        return f'{self.id}: {self.favorite_vk_id}'
+        return f'{self.id}: {self.vk_id}'
+
 
 
 

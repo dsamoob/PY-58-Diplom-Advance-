@@ -13,14 +13,13 @@ DSN = f'postgresql://{config.db_login}:{config.db_password}@localhost:5432/{conf
 engine = sqlalchemy.create_engine(DSN)
 Session = sessionmaker(bind=engine)
 session = Session()
-dbapp = DBapp(User, Match, FavoriteList, UnFavoriteList, SearchingList, session, conn)
+dbapp = DBapp(User, Match, FavoriteList, UnFavoriteList, SearchingList, session)
 vkapp = VKapp(token_user=config.vk_token_prog, tokenVK_Group=config.vk_token_my)
 path = 'total.json'
 
 
 if __name__ == '__main__':
-
-    create_tables(engine)
+    # create_tables(engine)
     for event in vkapp.longpoll.listen():
         if event.type == VkEventType.MESSAGE_NEW:
             if event.to_me:
@@ -42,29 +41,14 @@ if __name__ == '__main__':
                 elif msg == 'sex':
                     vkapp.send_msg(user_id, vkapp.get_reverse_sex(user_id))
                 elif msg == 'search':
-                    vkapp.create_file(vkapp.total_dict(user_id))
-                    dbapp.add_to_searching_list(path)
+                    dbapp.add_to_searching_list(vkapp.total_dict(user_id), user_id)  # убрал фаил -все идет напрямую.
                     result = dbapp.get_next_search()
                     vkapp.send_msg(user_id,
                                    f'{result[1]} {result[2]}\n'
                                    f'https://vk.com/id{result[0]}\n'
                                    )
-                    send_kb_in_message(user_id, msg.lower(), result[0])
                     vkapp.send_foto(user_id=user_id, user_id_foto=result[0])
-                    result = dbapp.get_next_search()
-                    vkapp.send_msg(user_id,
-                                   f'{result[1]} {result[2]}\n'
-                                   f'https://vk.com/id{result[0]}\n'
-                                   )
                     send_kb_in_message(user_id, msg.lower(), result[0])
-                    vkapp.send_foto(user_id=user_id, user_id_foto=result[0])
-                    result = dbapp.get_next_search()
-                    vkapp.send_msg(user_id,
-                                   f'{result[1]} {result[2]}\n'
-                                   f'https://vk.com/id{result[0]}\n'
-                                   )
-                    send_kb_in_message(user_id, msg.lower(), result[0])
-                    vkapp.send_foto(user_id=user_id, user_id_foto=result[0])
                 elif msg.split('_')[0] == 'black':
                     # код для вставки анкеты с ID {msg.split('_')[1]} в чёрный список
                     print(f"BLACK ID {msg.split('_')[1]}")

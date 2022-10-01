@@ -143,6 +143,7 @@ class VKapp:
                             'age': datetime.now().year - datetime.strptime(serch_user['bdate'], '%d.%m.%Y').year,
                             'city': city_title
                         }
+            print(len(tot_dict))
             return tot_dict
 
     def search_user(self, user_id, down_adge=1, up_adge=1, count=1000):  # Вывод найденных пользователе
@@ -162,10 +163,6 @@ class VKapp:
         response = requests.get(url, params={**self.params_User, **params}).json()
         return response
 
-    def create_file(self, total_dict):
-        with open(f"total.json", "w", encoding='UTF-8') as write_file:
-            json.dump(total_dict, write_file)
-        print(f'Создан файл: total.json')
 
     def send_foto(self, user_id, user_id_foto, message=''):
         for key, value in self.foto_dict(user_id_foto).items():
