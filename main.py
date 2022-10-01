@@ -29,7 +29,7 @@ if __name__ == '__main__':
                 if msg == 'hi':
                     vkapp.send_msg(user_id, 'hello friend')
                     vkapp.send_msg(user_id, 'how a u?')
-                if msg == 'ok':
+                elif msg == 'ok':
                     vkapp.send_msg(user_id, 'tell the amoun of 5 and 5)')
                     vkapp.send_msg(user_id, user_id)
                 elif msg == 'name':
@@ -61,3 +61,4 @@ if __name__ == '__main__':
                                    f'https://vk.com/id{result[0]}\n'
                                    )
                     vkapp.send_foto(user_id=user_id, user_id_foto=result[0])
+
