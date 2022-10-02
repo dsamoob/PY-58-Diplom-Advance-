@@ -67,12 +67,22 @@ class DBapp:
             self.session.commit()
 
     def add_match(self, match_id):
+        match_id = str(match_id)
         try:
             new_match = self.session.query(self.match).filter(self.match.vk_id == match_id).one()
         except:
-            new_match = self.match(vk_id=match_id)
-            self.session.add(new_match)
-            self.session.commit()
+            new_match = self.session.query(self.searchinglist).filter(self.searchinglist.match_id==match_id).all()
+            for row in new_match:
+                new_row = [row.first_name, row.last_name, row.sex, row.age, row.city]
+                add = self.match(vk_id=match_id,
+                             first_name=new_row[0],
+                             last_name=new_row[1],
+                             sex=new_row[2],
+                             age=new_row[3],
+                             city=new_row[4]
+                             )
+                self.session.add(add)
+                self.session.commit()
 
     def get_user_pk(self, vk_id):
         user = self.session.query(self.user).filter(self.user.vk_id == vk_id)

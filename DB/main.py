@@ -17,22 +17,13 @@ path = '/Users/egorbelov/GitHub/PY-58-Diplom-Advance/VK/total.json'
 
 
 if __name__ == '__main__':
-    # create_tables()
+    # create_tables(engine)
     # for i in data.match:
     #     dbapp.add_match(i)
     # for i in data.users:
     #     dbapp.add_user(i)
     # dbapp.get_user_pk('781002')
-    # dbapp.get_user_pk('12')
-    # dbapp.get_match_pk('00124002')
-    # # create_tables(engine)
-    # dbapp.add_match('12345')
-    # dbapp.add_match('0000')
-    # dbapp.add_match('00002')
-    # dbapp.add_match('0000')
-    # dbapp.add_match('00124002')
-    # dbapp.add_match('00124002')
-    dbapp.test('483857710')
+    dbapp.add_match(345992739)
 
 
 

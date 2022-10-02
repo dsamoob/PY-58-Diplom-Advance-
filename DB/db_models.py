@@ -33,7 +33,7 @@ class Match(Base):
     first_name = sq.Column(sq.String(length=50))
     last_name = sq.Column(sq.String(length=50))
     sex = sq.Column(sq.String(length=20))
-    edge = sq.Column(sq.String(length=10))
+    age = sq.Column(sq.String(length=10))
     city = sq.Column(sq.String(length=50))
 
     def __str__(self):
