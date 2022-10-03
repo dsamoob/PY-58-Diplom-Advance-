@@ -23,7 +23,12 @@ if __name__ == '__main__':
     # for i in data.users:
     #     dbapp.add_user(i)
     # dbapp.get_user_pk('781002')
-    dbapp.add_match(345992739)
+    # dbapp.add_user(9681602)
+    # dbapp.add_match(470680882)
+    # dbapp.add_match_to_favorite(9681602, 470680882)
+    dbapp
+
+
 
 
 

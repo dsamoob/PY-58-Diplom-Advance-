@@ -25,6 +25,7 @@ if __name__ == '__main__':
             if event.to_me:
                 msg = event.text.lower()
                 user_id = event.user_id
+                dbapp.add_user(user_id)  # добавления пользователя в базу на этапе начала работы
                 send_kb(user_id, msg.lower())
                 if msg == 'hi':
                     vkapp.send_msg(user_id, 'hello friend')
@@ -42,6 +43,7 @@ if __name__ == '__main__':
                     vkapp.send_msg(user_id, vkapp.get_reverse_sex(user_id))
                 elif msg == 'search':
                     dbapp.add_to_searching_list(vkapp.total_dict(user_id), user_id)  # убрал фаил -все идет напрямую.
+
                     result = dbapp.get_next_search()
                     vkapp.send_msg(user_id,
                                    f'{result[1]} {result[2]}\n'
@@ -50,15 +52,34 @@ if __name__ == '__main__':
                     vkapp.send_foto(user_id=user_id, user_id_foto=result[0])
                     send_kb_in_message(user_id, msg.lower(), result[0])
                 elif msg.split('_')[0] == 'black':
+                    match_id = msg.split('_')[1]
+                    dbapp.add_match(match_id)  # Добавление совпадения в список совпадений
+                    dbapp.add_match_to_unfavorite(user_id, match_id)  # добавление совпадения в черный писок
+
                     # код для вставки анкеты с ID {msg.split('_')[1]} в чёрный список
                     print(f"BLACK ID {msg.split('_')[1]}")
-                elif msg.split('_')[0] == 'favorite':
+                elif msg.split('_')[0] == 'favorite':  # добавляет, но можно добавлять много раз, кнопка не пропадает после нажатия
+                    match_id = msg.split('_')[1]
+                    dbapp.add_match(match_id)
+                    dbapp.add_match_to_favorite(user_id, match_id)
                     # код для вставки анкеты с ID {msg.split('_')[1]} в избранное
                     print(f"Favorite ID {msg.split('_')[1]}")
-                elif msg == "<back":
-                    pass #переход к предыдущим анкетам
+                elif msg == "<back":  # Не работает
+                    result = dbapp.get_previous_search()
+                    vkapp.send_msg(user_id,
+                                   f'{result[1]} {result[2]}\n'
+                                   f'https://vk.com/id{result[0]}\n'
+                                   )
+                    vkapp.send_foto(user_id=user_id, user_id_foto=result[0])
+                    send_kb_in_message(user_id, msg.lower(), result[0])
                 elif msg == 'next>':
-                    pass # сл анкеты
+                    result = dbapp.get_next_search()   # Не работает
+                    vkapp.send_msg(user_id,
+                                   f'{result[1]} {result[2]}\n'
+                                   f'https://vk.com/id{result[0]}\n'
+                                   )
+                    vkapp.send_foto(user_id=user_id, user_id_foto=result[0])
+                    send_kb_in_message(user_id, msg.lower(), result[0])
                 elif msg == 'view_favorite':
                     pass # показать избранное
                 elif msg == 'view_black':

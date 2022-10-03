@@ -19,12 +19,9 @@ class DBapp:
             return [row.match_id, row.first_name, row.last_name, row.age, row.sex, row.city]
 
     def __delete_from_searching_list(self, vk_id):
-        try:
-            for_delete = self.session.delete(self.searchinglist).where(self.searchinglist.user_id == vk_id)
-            self.session.delete(for_delete)
-            self.session.commit()
-        except:
-            pass
+        for_delete = self.session.query(self.searchinglist).where(self.searchinglist.user_id == str(vk_id)).delete()
+        self.session.commit()
+
 
     def add_to_searching_list(self, match_dic, user_id):
         self.__delete_from_searching_list(user_id)
@@ -59,6 +56,7 @@ class DBapp:
         return 'no previous'
 
     def add_user(self, user_id):
+        user_id = str(user_id)
         try:
             new_user = self.session.query(self.user).filter(self.user.vk_id == user_id).one()
         except:
@@ -71,34 +69,45 @@ class DBapp:
         try:
             new_match = self.session.query(self.match).filter(self.match.vk_id == match_id).one()
         except:
-            new_match = self.session.query(self.searchinglist).filter(self.searchinglist.match_id==match_id).all()
+            new_match = self.session.query(self.searchinglist).filter(self.searchinglist.match_id == match_id).all()
             for row in new_match:
                 new_row = [row.first_name, row.last_name, row.sex, row.age, row.city]
                 add = self.match(vk_id=match_id,
-                             first_name=new_row[0],
-                             last_name=new_row[1],
-                             sex=new_row[2],
-                             age=new_row[3],
-                             city=new_row[4]
-                             )
+                                 first_name=new_row[0],
+                                 last_name=new_row[1],
+                                 sex=new_row[2],
+                                 age=new_row[3],
+                                 city=new_row[4]
+                                 )
                 self.session.add(add)
                 self.session.commit()
 
-    def get_user_pk(self, vk_id):
+    def __get_user_pk(self, vk_id):
         user = self.session.query(self.user).filter(self.user.vk_id == vk_id)
         for i in user:
             return i.id
 
-    def get_match_pk(self, vk_id):
+    def __get_match_pk(self, vk_id):
         match = self.session.query(self.match).filter(self.match.vk_id == vk_id)
         for i in match:
             return i.id
 
-    def add_match_to_favorite(self, match_pk, user_pk):
-        pass
+    def add_match_to_favorite(self, user_id, match_id):
+        user_pk = self.__get_user_pk(str(user_id))
+        match_pk = self.__get_match_pk(str(match_id))
+        add = self.favoritelist(id_user=user_pk,
+                                id_match=match_pk)
+        self.session.add(add)
+        self.session.commit()
 
-    def add_match_to_unfavorite(self, match_pk, user_pk):
-        pass
+
+    def add_match_to_unfavorite(self, user_id, match_id):
+        user_pk = self.__get_user_pk(str(user_id))
+        match_pk = self.__get_match_pk(str(match_id))
+        add = self.unfavoritelist(id_user=user_pk,
+                                  id_match=match_pk)
+        self.session.add(add)
+        self.session.commit()
 
     def del_unfavorite(self, vk_user_id, vk_match_id):
         pass
