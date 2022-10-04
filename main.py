@@ -44,7 +44,7 @@ if __name__ == '__main__':
                 elif msg == 'search':
                     dbapp.add_to_searching_list(vkapp.total_dict(user_id), user_id)  # убрал фаил -все идет напрямую.
 
-                    result = dbapp.get_next_search()
+                    result = dbapp.get_first_search(user_id)
                     vkapp.send_msg(user_id,
                                    f'{result[1]} {result[2]}\n'
                                    f'https://vk.com/id{result[0]}\n'
@@ -55,33 +55,57 @@ if __name__ == '__main__':
                     match_id = msg.split('_')[1]
                     dbapp.add_match(match_id)  # Добавление совпадения в список совпадений
                     dbapp.add_match_to_unfavorite(user_id, match_id)  # добавление совпадения в черный писок
-
-                    # код для вставки анкеты с ID {msg.split('_')[1]} в чёрный список
-                    print(f"BLACK ID {msg.split('_')[1]}")
+                    result = dbapp.get_next_search()
+                    vkapp.send_msg(user_id,
+                                   f'{result[1]} {result[2]}\n'
+                                   f'https://vk.com/id{result[0]}\n'
+                                   )
+                    vkapp.send_foto(user_id=user_id, user_id_foto=result[0])
+                    send_kb_in_message(user_id, msg.lower(), result[0])
                 elif msg.split('_')[0] == 'favorite':  # добавляет, но можно добавлять много раз, кнопка не пропадает после нажатия
                     match_id = msg.split('_')[1]
                     dbapp.add_match(match_id)
                     dbapp.add_match_to_favorite(user_id, match_id)
-                    # код для вставки анкеты с ID {msg.split('_')[1]} в избранное
-                    print(f"Favorite ID {msg.split('_')[1]}")
-                elif msg == "<back":  # Не работает
+                    result = dbapp.get_next_search()
+                    vkapp.send_msg(user_id,
+                                   f'{result[1]} {result[2]}\n'
+                                   f'https://vk.com/id{result[0]}\n'
+                                   )
+                    vkapp.send_foto(user_id=user_id, user_id_foto=result[0])
+                    send_kb_in_message(user_id, msg.lower(), result[0])
+                elif msg == 'back':
                     result = dbapp.get_previous_search()
-                    vkapp.send_msg(user_id,
-                                   f'{result[1]} {result[2]}\n'
-                                   f'https://vk.com/id{result[0]}\n'
-                                   )
-                    vkapp.send_foto(user_id=user_id, user_id_foto=result[0])
-                    send_kb_in_message(user_id, msg.lower(), result[0])
-                elif msg == 'next>':
-                    result = dbapp.get_next_search()   # Не работает
-                    vkapp.send_msg(user_id,
-                                   f'{result[1]} {result[2]}\n'
-                                   f'https://vk.com/id{result[0]}\n'
-                                   )
-                    vkapp.send_foto(user_id=user_id, user_id_foto=result[0])
-                    send_kb_in_message(user_id, msg.lower(), result[0])
+
+                    if result == 'no more':
+                        vkapp.send_msg(user_id, f'{result}')
+                    else:
+                        vkapp.send_msg(user_id,
+                                       f'{result[1]} {result[2]}\n'
+                                       f'https://vk.com/id{result[0]}\n'
+                                       )
+                        vkapp.send_foto(user_id=user_id, user_id_foto=result[0])
+                        send_kb_in_message(user_id, msg.lower(), result[0])
+                elif msg == 'next':
+                    result = dbapp.get_next_search()
+                    if result == 'no more':
+                        vkapp.send_msg(user_id, f'{result}')
+                    else:
+                        vkapp.send_msg(user_id,
+                                       f'{result[1]} {result[2]}\n'
+                                       f'https://vk.com/id{result[0]}\n'
+                                       )
+                        vkapp.send_foto(user_id=user_id, user_id_foto=result[0])
+                        send_kb_in_message(user_id, msg.lower(), result[0])
                 elif msg == 'view_favorite':
-                    pass # показать избранное
+                    for item in dbapp.get_favorite_list(user_id):
+                        vkapp.send_msg(user_id,
+                                   f'{item[1]} {item[2]}\n'
+                                   f'https://vk.com/id{item[0]}\n'
+                                   )
                 elif msg == 'view_black':
-                    pass # Показать черный список
+                    for item in dbapp.get_unfavorite_list(user_id):
+                        vkapp.send_msg(user_id,
+                                       f'{item[1]} {item[2]}\n'
+                                       f'https://vk.com/id{item[0]}\n'
+                                       )
 

@@ -17,9 +17,10 @@ def send_kb (user_id, text):
         "inline": False,
         "buttons": [
             [get_button('search', 'primary')],
-            [get_button('<back', 'secondary'), get_button('view_favorite', 'secondary'),
+            [get_button('back', 'secondary'),
+             get_button('view_favorite', 'secondary'),
              get_button('view_black', 'secondary'),
-             get_button('next>', 'secondary')]
+             get_button('next', 'secondary')]
         ]
     }
     vkapp.vk.method('messages.send', {'user_id': user_id,

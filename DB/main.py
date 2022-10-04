@@ -26,7 +26,8 @@ if __name__ == '__main__':
     # dbapp.add_user(9681602)
     # dbapp.add_match(470680882)
     # dbapp.add_match_to_favorite(9681602, 470680882)
-    dbapp
+    # print(dbapp.get_unfavorite_list(str(483857710)))
+    # dbapp.del_unfavorite(483857710, 551804125)
 
 
 
