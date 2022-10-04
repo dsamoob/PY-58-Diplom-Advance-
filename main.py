@@ -6,7 +6,7 @@ from vk_api.longpoll import VkEventType
 from DB.class_DBapp import DBapp
 from DB.db_models import create_tables, Match, User, FavoriteList, UnFavoriteList, SearchingList
 from VK.class_VKapp import VKapp
-from VK.keyboard import send_kb, send_kb_in_message
+from VK.keyboard import send_kb, send_kb_in_message, del_from_f, del_from_uf
 
 conn = psycopg2.connect(database=config.db_name, user=config.db_login, password=config.db_password)
 DSN = f'postgresql://{config.db_login}:{config.db_password}@localhost:5432/{config.db_name}'
@@ -99,9 +99,18 @@ if __name__ == '__main__':
                                        f'{item[1]} {item[2]}\n'
                                        f'https://vk.com/id{item[0]}\n'
                                        )
+                        del_from_f(user_id, msg.lower(), item[0])
                 elif msg == 'view_black':
                     for item in dbapp.get_unfavorite_list(user_id):
                         vkapp.send_msg(user_id,
                                        f'{item[1]} {item[2]}\n'
                                        f'https://vk.com/id{item[0]}\n'
                                        )
+                        del_from_uf(user_id, msg.lower(), item[0])
+                elif msg.split('_')[0] == 'deleteuf':
+                    dbapp.del_unfavorite(user_id, msg.split('_')[1])
+
+                elif msg.split('_')[0] == 'deletef':
+                    dbapp.del_favorite(user_id, msg.split('_')[1])
+
+

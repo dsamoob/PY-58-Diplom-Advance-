@@ -43,7 +43,31 @@ def send_kb_in_message(user_id, text, user_id_search):
                                       'random_id': 0,
                                       'keyboard': encode(keyboard)})
 
+def del_from_uf(user_id, text, user_id_search):
+    from VK.main import vkapp
+    keyboard = {
+        "one_time": False,
+        "inline": True,
+        "buttons":
+            [[get_button(f'deleteuf_{user_id_search}', 'negative')]]
+    }
+    vkapp.vk.method('messages.send', {'user_id': user_id,
+                                      'message': text,
+                                      'random_id': 0,
+                                      'keyboard': encode(keyboard)})
 
+def del_from_f(user_id, text, user_id_search):
+    from VK.main import vkapp
+    keyboard = {
+        "one_time": False,
+        "inline": True,
+        "buttons":
+            [[get_button(f'deletef_{user_id_search}', 'negative')]]
+    }
+    vkapp.vk.method('messages.send', {'user_id': user_id,
+                                      'message': text,
+                                      'random_id': 0,
+                                      'keyboard': encode(keyboard)})
 def encode(keyboard):
     keyboard = json.dumps(keyboard, ensure_ascii=False).encode('utf-8')
     return str(keyboard.decode('utf-8'))

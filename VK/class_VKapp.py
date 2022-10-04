@@ -69,8 +69,6 @@ class VKapp:
                     else:
                         return a
 
-
-
     def get_primary_foto_id(self, user_id):
         """ГЛАВНАЯ ФОТОГРАФИЯ ПОЛЬЗОВАТЕЛЯ"""
         response = self.users_info(user_id)
