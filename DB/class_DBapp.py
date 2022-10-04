@@ -1,5 +1,4 @@
 from sqlalchemy import func
-import json
 
 
 class DBapp:
@@ -19,7 +18,7 @@ class DBapp:
             return [row.match_id, row.first_name, row.last_name, row.age, row.sex, row.city]
 
     def __del_from_sl_user(self, vk_id):
-        for_delete = self.session.query(self.searchinglist).where(self.searchinglist.user_id == str(vk_id)).delete()
+        self.session.query(self.searchinglist).where(self.searchinglist.user_id == str(vk_id)).delete()
         self.session.commit()
 
     def add_to_searching_list(self, match_dic, user_id):
@@ -43,16 +42,13 @@ class DBapp:
                 )
                 self.session.add(item)
         self.session.commit()
-
-
         self.last = self.session.query(func.max(self.searchinglist.id)).filter(self.searchinglist.user_id ==
                                                                                str(user_id)).all()[0][0]
-
 
     def get_first_search(self, user_id):
         self.offset = self.session.query(func.min(self.searchinglist.id)).filter(self.searchinglist.user_id ==
                                                                                  str(user_id)).all()[0][0]
-        result = result = self.__query_searching_list()
+        result = self.__query_searching_list()
         return result
 
     def get_next_search(self):  # Возвращает следующее значение бд списоком из 6и наименований
@@ -72,7 +68,7 @@ class DBapp:
     def add_user(self, user_id):
         user_id = str(user_id)
         try:
-            new_user = self.session.query(self.user).filter(self.user.vk_id == user_id).one()
+            self.session.query(self.user).filter(self.user.vk_id == user_id).one()
         except:
             new_user = self.user(vk_id=user_id)
             self.session.add(new_user)
@@ -81,7 +77,7 @@ class DBapp:
     def add_match(self, match_id):
         match_id = str(match_id)
         try:
-            new_match = self.session.query(self.match).filter(self.match.vk_id == match_id).one()
+            self.session.query(self.match).filter(self.match.vk_id == match_id).one()
         except:
             new_match = self.session.query(self.searchinglist).filter(self.searchinglist.match_id == match_id).all()
             for row in new_match:
@@ -134,7 +130,8 @@ class DBapp:
     def get_unfavorite_list(self, user_id):
         unfavorite_list = []
         upk = self.__get_user_pk(user_id)
-        favorites = [i.id_match for i in self.session.query(self.unfavoritelist).filter(self.unfavoritelist.id_user == upk)]
+        favorites = [i.id_match for i in
+                     self.session.query(self.unfavoritelist).filter(self.unfavoritelist.id_user == upk)]
         for item in favorites:
             for row in self.session.query(self.match).filter(self.match.id == item).all():
                 unfavorite_list.append([row.vk_id, row.first_name, row.last_name, row.sex, row.age, row.city])
@@ -143,18 +140,16 @@ class DBapp:
     def del_favorite(self, user_id, match_id):
         upk = self.__get_user_pk(user_id)
         mpk = self.__get_match_pk(match_id)
-        for_delete = self.session.query(self.favoritelist).filter(
+        self.session.query(self.favoritelist).filter(
             self.favoritelist.id_user == upk).filter(self.favoritelist.id_match == mpk).delete()
         self.session.commit()
 
     def del_unfavorite(self, user_id, match_id):
         upk = self.__get_user_pk(user_id)
         mpk = self.__get_match_pk(match_id)
-        for_delete = self.session.query(self.unfavoritelist).filter(
+        self.session.query(self.unfavoritelist).filter(
             self.unfavoritelist.id_user == upk).filter(self.unfavoritelist.id_match == mpk).delete()
         self.session.commit()
-
-
 
     def __check_dupl_fav_unfav(self, upk, mpk, table):
         pass

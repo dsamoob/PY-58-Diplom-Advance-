@@ -17,7 +17,6 @@ dbapp = DBapp(User, Match, FavoriteList, UnFavoriteList, SearchingList, session)
 vkapp = VKapp(token_user=config.vk_token_prog, tokenVK_Group=config.vk_token_my)
 path = 'total.json'
 
-
 if __name__ == '__main__':
     # create_tables(engine)
     for event in vkapp.longpoll.listen():
@@ -42,7 +41,7 @@ if __name__ == '__main__':
                 elif msg == 'sex':
                     vkapp.send_msg(user_id, vkapp.get_reverse_sex(user_id))
                 elif msg == 'search':
-                    dbapp.add_to_searching_list(vkapp.total_dict(user_id), user_id)  # убрал фаил -все идет напрямую.
+                    dbapp.add_to_searching_list(vkapp.total_dict(user_id), user_id)
 
                     result = dbapp.get_first_search(user_id)
                     vkapp.send_msg(user_id,
@@ -53,8 +52,8 @@ if __name__ == '__main__':
                     send_kb_in_message(user_id, msg.lower(), result[0])
                 elif msg.split('_')[0] == 'black':
                     match_id = msg.split('_')[1]
-                    dbapp.add_match(match_id)  # Добавление совпадения в список совпадений
-                    dbapp.add_match_to_unfavorite(user_id, match_id)  # добавление совпадения в черный писок
+                    dbapp.add_match(match_id)
+                    dbapp.add_match_to_unfavorite(user_id, match_id)
                     result = dbapp.get_next_search()
                     vkapp.send_msg(user_id,
                                    f'{result[1]} {result[2]}\n'
@@ -62,7 +61,7 @@ if __name__ == '__main__':
                                    )
                     vkapp.send_foto(user_id=user_id, user_id_foto=result[0])
                     send_kb_in_message(user_id, msg.lower(), result[0])
-                elif msg.split('_')[0] == 'favorite':  # добавляет, но можно добавлять много раз, кнопка не пропадает после нажатия
+                elif msg.split('_')[0] == 'favorite':
                     match_id = msg.split('_')[1]
                     dbapp.add_match(match_id)
                     dbapp.add_match_to_favorite(user_id, match_id)
@@ -75,7 +74,6 @@ if __name__ == '__main__':
                     send_kb_in_message(user_id, msg.lower(), result[0])
                 elif msg == 'back':
                     result = dbapp.get_previous_search()
-
                     if result == 'no more':
                         vkapp.send_msg(user_id, f'{result}')
                     else:
@@ -99,13 +97,12 @@ if __name__ == '__main__':
                 elif msg == 'view_favorite':
                     for item in dbapp.get_favorite_list(user_id):
                         vkapp.send_msg(user_id,
-                                   f'{item[1]} {item[2]}\n'
-                                   f'https://vk.com/id{item[0]}\n'
-                                   )
+                                       f'{item[1]} {item[2]}\n'
+                                       f'https://vk.com/id{item[0]}\n'
+                                       )
                 elif msg == 'view_black':
                     for item in dbapp.get_unfavorite_list(user_id):
                         vkapp.send_msg(user_id,
                                        f'{item[1]} {item[2]}\n'
                                        f'https://vk.com/id{item[0]}\n'
                                        )
-
