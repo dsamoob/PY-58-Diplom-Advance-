@@ -42,7 +42,6 @@ if __name__ == '__main__':
                     vkapp.send_msg(user_id, vkapp.get_reverse_sex(user_id))
                 elif msg == 'search':
                     dbapp.add_to_searching_list(vkapp.total_dict(user_id), user_id)
-
                     result = dbapp.get_first_search(user_id)
                     vkapp.send_msg(user_id,
                                    f'{result[1]} {result[2]}\n'
