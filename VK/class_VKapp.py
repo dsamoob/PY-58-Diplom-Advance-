@@ -50,8 +50,6 @@ class VKapp:
     def get_age(self, user_id):
         """ПОЛУЧЕНИЕ ВОЗРАСТА"""
         response = self.users_info(user_id)
-        print (response)
-        # response = {'response':0}
         date = response['response'][0].get('bdate')
         if (date is not None) and (len(date.split('.'))) == 3:
             year = datetime.now().year
