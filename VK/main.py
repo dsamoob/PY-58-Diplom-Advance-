@@ -52,3 +52,4 @@ if __name__ == '__main__':
                     vkapp.send_foto(user_id=user_id, user_id_foto=(list(total_dict)[2]))
                     print(total_dict)
                     create_file(total_dict)
+
