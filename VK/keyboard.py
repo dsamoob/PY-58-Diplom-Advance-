@@ -3,6 +3,7 @@ import json
 def get_button(text, color):
     return {
         "action": {
+            # "type": "callback",
             "type": "text",
             "label": f"{text}"
         },

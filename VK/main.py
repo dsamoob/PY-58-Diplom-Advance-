@@ -14,8 +14,10 @@ vkapp = VKapp(token_user=config.vk_token_prog, tokenVK_Group=config.vk_token_my)
 
 if __name__ == '__main__':
     # bot = VKapp(token_user=config.vk_token_prog, tokenVK_Group=config.vk_token_my)
-    a = vkapp.foto_dict(1)
-    print(a)
+    # a = vkapp.total_dict(1)
+    # print(a)
+    b = vkapp.foto_dict(159538953)
+    print (b)
     # print(list(bot.total_dict(54934926))[0])
     def create_file(total_dict):
         with open(f"total.json", "w",encoding='UTF-8') as write_file:

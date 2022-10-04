@@ -1,7 +1,8 @@
 from datetime import datetime
 import requests
 import vk_api
-from vk_api.longpoll import VkLongPoll
+from vk_api.longpoll import VkLongPoll, VkEventType
+import time
 import json
 
 class VKapp:
@@ -49,12 +50,26 @@ class VKapp:
     def get_age(self, user_id):
         """ПОЛУЧЕНИЕ ВОЗРАСТА"""
         response = self.users_info(user_id)
-        try:
-            date = response['response'][0]['bdate']
+        date = response['response'][0].get('bdate')
+        if (date is not None) and (len(date.split('.'))) == 3:
             year = datetime.now().year
+            print(date)
             return year - datetime.strptime(date, '%d.%m.%Y').year
-        except KeyError:
-            self.send_msg(user_id, 'Ошибка токена')
+        else:
+            self.send_msg(user_id, 'Сколько Вам лет: ')
+            for event in self.longpoll.listen():
+                if  event.to_me:
+                    age = event.text.lower()
+                    try:
+                        a = int(age)
+                    except:
+                        return 35
+                    if (a > 65) or (a < 16):
+                        return 35
+                    else:
+                        return a
+
+
 
     def get_primary_foto_id(self, user_id):
         """ГЛАВНАЯ ФОТОГРАФИЯ ПОЛЬЗОВАТЕЛЯ"""
@@ -98,7 +113,7 @@ class VKapp:
         url = 'https://api.vk.com/method/photos.get'
         params = {'owner_id': user_id, 'album_id': album, 'extended': '1', 'photo_sizes': '1', 'offset': offset}
         response = requests.get(url, params={**self.params_User, **params})
-        # time.sleep(0.3)
+        time.sleep(0.3)
         return response.json()
 
     def foto_dict(self, user_id, list_album='profile'):  # словарь вида {like:owenID_fotoID}
@@ -145,6 +160,8 @@ class VKapp:
                         }
             print(len(tot_dict))
             return tot_dict
+
+
 
     def search_user(self, user_id, down_adge=1, up_adge=1, count=1000):  # Вывод найденных пользователе
         """ПОИСК ПОЛЬЗОВАТЕЛЯ ПО ДАННЫМ"""
