@@ -161,13 +161,14 @@ class VKapp:
 
 
 
-    def search_user(self, user_id, down_adge=1, up_adge=1, count=1000):  # Вывод найденных пользователе
+    def search_user(self, user_id, down_age=1, up_age=1, count=1000):  # Вывод найденных пользователе
         """ПОИСК ПОЛЬЗОВАТЕЛЯ ПО ДАННЫМ"""
+        age = self.get_age(user_id)
         url = f'https://api.vk.com/method/users.search'
         params = {
             'sex': self.get_reverse_sex(user_id),
-            'age_from': self.get_age(user_id) - down_adge,
-            'age_to': self.get_age(user_id) + up_adge,
+            'age_from': age - down_age,
+            'age_to': age + up_age,
             'city': self.get_id_city(user_id),
             'status': '1' or '6',
             'has_photo': '1',
