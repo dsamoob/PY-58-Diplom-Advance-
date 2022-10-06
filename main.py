@@ -68,7 +68,7 @@ if __name__ == '__main__':
                     match_id = msg.split('_')[1]
                     dbapp.add_match(match_id)
                     dbapp.add_match_to_unfavorite(user_id, match_id)
-                    result = dbapp.get_next_search()
+                    result = dbapp.get_next_search(user_id)
                     vkapp.send_msg(user_id,
                                    f'{result[1]} {result[2]}\n'
                                    f'https://vk.com/id{result[0]}\n'
@@ -79,7 +79,7 @@ if __name__ == '__main__':
                     match_id = msg.split('_')[1]
                     dbapp.add_match(match_id)
                     dbapp.add_match_to_favorite(user_id, match_id)
-                    result = dbapp.get_next_search()
+                    result = dbapp.get_next_search(user_id)
                     vkapp.send_msg(user_id,
                                    f'{result[1]} {result[2]}\n'
                                    f'https://vk.com/id{result[0]}\n'
