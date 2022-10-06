@@ -1,39 +1,34 @@
 import sqlalchemy
 from sqlalchemy.orm import sessionmaker
 import config as config
-from DB.db_models import create_tables, Match, User, FavoriteList, UnFavoriteList, SearchingList
 from DB.class_DBapp import DBapp
-import psycopg2
-import data
+from data import searching_list
+from DB.db_models import create_tables
 
 
-conn = psycopg2.connect(database=config.db_name, user=config.db_login, password=config.db_password)
 DSN = f'postgresql://{config.db_login}:{config.db_password}@localhost:5432/{config.db_name}'
 engine = sqlalchemy.create_engine(DSN)
 Session = sessionmaker(bind=engine)
 session = Session()
-dbapp = DBapp(User, Match, FavoriteList, UnFavoriteList, SearchingList, session)
-path = '/Users/egorbelov/GitHub/PY-58-Diplom-Advance/VK/total.json'
+dbapp = DBapp(session)
 
-
+"""Для теста"""
 if __name__ == '__main__':
-    # create_tables(engine)
-    # for i in data.match:
-    #     dbapp.add_match(i)
-    # for i in data.users:
-    #     dbapp.add_user(i)
-    # dbapp.get_user_pk('781002')
-    # dbapp.add_user(9681602)
-    # dbapp.add_match(470680882)
-    # dbapp.add_match_to_favorite(9681602, 470680882)
-    # print(dbapp.get_unfavorite_list(str(483857710)))
-    # dbapp.del_unfavorite(483857710, 551804125)
-
-
-
-
-
-
-
-
-
+    create_tables(engine)
+    user_id = 7516145
+    dbapp.add_user(user_id)  # добавление пользователя
+    dbapp.add_to_searching_list(searching_list, user_id)  # загрузка поискового списка по пользователю
+    dbapp.add_match(551804125)   # добавление в соотвествие
+    dbapp.add_match(412680665)
+    dbapp.add_match(147707590)
+    dbapp.add_match(380944656)
+    dbapp.add_match_to_favorite(user_id, 551804125)  # добавление в список избранных
+    dbapp.add_match_to_favorite(user_id, 147707590)
+    dbapp.add_match_to_unfavorite(user_id, 412680665)  # добавление в черный список
+    dbapp.add_match_to_unfavorite(user_id, 380944656)
+    print('список избранных', dbapp.get_favorite_list(user_id))
+    print('список черных', dbapp.get_unfavorite_list(user_id))
+    dbapp.del_favorite(user_id, 147707590)  # удаление из списка избранных
+    dbapp.del_unfavorite(user_id, 380944656)
+    print('список избранных после удаления', dbapp.get_favorite_list(user_id))
+    print('список черных после удаления', dbapp.get_unfavorite_list(user_id))

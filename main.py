@@ -1,21 +1,21 @@
-import config
-import psycopg2
+import config as config
 import sqlalchemy
 from sqlalchemy.orm import sessionmaker
 from vk_api.longpoll import VkEventType
 from DB.class_DBapp import DBapp
-from DB.db_models import create_tables, Match, User, FavoriteList, UnFavoriteList, SearchingList
+from DB.db_models import create_tables
 from VK.class_VKapp import VKapp
-from VK.keyboard import send_kb, send_kb_in_message, del_from_f, del_from_uf
+from VK.keyboard import send_kb_in_message, del_from_f, del_from_uf
 
-conn = psycopg2.connect(database=config.db_name, user=config.db_login, password=config.db_password)
 DSN = f'postgresql://{config.db_login}:{config.db_password}@localhost:5432/{config.db_name}'
 engine = sqlalchemy.create_engine(DSN)
 Session = sessionmaker(bind=engine)
 session = Session()
-dbapp = DBapp(User, Match, FavoriteList, UnFavoriteList, SearchingList, session)
+
+
+dbapp = DBapp(session)
 vkapp = VKapp(token_user=config.vk_token_prog, tokenVK_Group=config.vk_token_my)
-path = 'total.json'
+
 
 if __name__ == '__main__':
     # create_tables(engine)
@@ -25,13 +25,8 @@ if __name__ == '__main__':
                 msg = event.text.lower()
                 user_id = event.user_id
                 dbapp.add_user(user_id)  # добавления пользователя в базу на этапе начала работы
-                send_kb(user_id, msg.lower())
-                if msg == 'hi':
-                    vkapp.send_msg(user_id, 'hello friend')
-                    vkapp.send_msg(user_id, 'how a u?')
-                elif msg == 'ok':
-                    vkapp.send_msg(user_id, 'tell the amoun of 5 and 5)')
-                    vkapp.send_msg(user_id, user_id)
+                if msg in ['hi', 'hello', 'good day', 'привет', 'хай']:
+                    vkapp.send_msg(user_id, 'привет!')
                 elif msg == 'name':
                     vkapp.send_msg(user_id, vkapp.get_name(user_id))
                 elif msg == 'adge':
@@ -109,6 +104,5 @@ if __name__ == '__main__':
                         del_from_uf(user_id, msg.lower(), item[0])
                 elif msg.split('_')[0] == 'deleteuf':
                     dbapp.del_unfavorite(user_id, msg.split('_')[1])
-
                 elif msg.split('_')[0] == 'deletef':
                     dbapp.del_favorite(user_id, msg.split('_')[1])

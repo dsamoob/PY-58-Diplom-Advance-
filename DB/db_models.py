@@ -1,6 +1,9 @@
 import sqlalchemy as sq
 from sqlalchemy.orm import declarative_base
+
 Base = declarative_base()
+
+""" отдельная таблица для прохода по найденым результатам"""
 
 
 class SearchingList(Base):
@@ -15,6 +18,9 @@ class SearchingList(Base):
     city = sq.Column(sq.String(length=50))
 
 
+"""таблица пользователей"""
+
+
 class User(Base):
     __tablename__ = "user"
 
@@ -23,6 +29,9 @@ class User(Base):
 
     def __str__(self):
         return f'{self.id}: {self.user_vk_id}'
+
+
+"""таблица соотвествий, которые добавлялись в черный и/или белый списки"""
 
 
 class Match(Base):
@@ -40,6 +49,7 @@ class Match(Base):
         return f'{self.id}: {self.vk_id}'
 
 
+"""Список избранных по пользователям"""
 
 
 class FavoriteList(Base):
@@ -48,6 +58,9 @@ class FavoriteList(Base):
     id = sq.Column(sq.Integer, primary_key=True)
     id_user = sq.Column(sq.Integer, sq.ForeignKey("user.id"), nullable=False)
     id_match = sq.Column(sq.Integer, sq.ForeignKey("match.id"), nullable=False)
+
+
+"""черный список по пользователям"""
 
 
 class UnFavoriteList(Base):
@@ -61,4 +74,3 @@ class UnFavoriteList(Base):
 def create_tables(engine):
     Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
-
