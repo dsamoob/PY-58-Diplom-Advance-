@@ -26,9 +26,12 @@ class User(Base):
 
     id = sq.Column(sq.Integer, primary_key=True)
     vk_id = sq.Column(sq.String(length=80), unique=True)
+    first = sq.Column(sq.Integer)
+    actual = sq.Column(sq.Integer)
+    last = sq.Column(sq.Integer)
 
     def __str__(self):
-        return f'{self.id}: {self.user_vk_id}'
+        return f'{self.id}: {self.user_vk_id}: {self.first}: {self.actual}: {self.last}'
 
 
 """таблица соотвествий, которые добавлялись в черный и/или белый списки"""

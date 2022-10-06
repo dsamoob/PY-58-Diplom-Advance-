@@ -15,8 +15,8 @@ class DBapp:
 
     """Получает из списка ряд согласно ид в классе"""
 
-    def __query_searching_list(self):
-        query = self.session.query(self.searchinglist).filter(self.searchinglist.id == self.offset)
+    def __query_searching_list(self, index):
+        query = self.session.query(self.searchinglist).filter(self.searchinglist.id == index)
         for row in query:
             return [row.match_id, row.first_name, row.last_name, row.age, row.sex, row.city]
 
@@ -55,35 +55,52 @@ class DBapp:
                 )
                 self.session.add(item)
         self.session.commit()
-        # Устанавливает последний элемент
-        self.last = self.session.query(func.max(self.searchinglist.id)).filter(self.searchinglist.user_id ==
+
+
+    def set_user_log(self, user_id):
+        first = self.session.query(func.min(self.searchinglist.id)).filter(self.searchinglist.user_id ==
+                                                                                str(user_id)).all()[0][0]
+        last = self.last = self.session.query(func.max(self.searchinglist.id)).filter(self.searchinglist.user_id ==
                                                                                str(user_id)).all()[0][0]
+        self.session.query(self.user).filter(self.user.vk_id == str(user_id)).update({'first': first,
+                                                                                 'actual': first,
+                                                                                 'last': last})
+        self.session.commit()
+
 
     """Устанавливает и возвращает первое соответствие для пользователя и выдает его"""
+    def get_match(self, index):
+        query = self.session.query(self.searchinglist).filter(self.searchinglist.id == str(index))
+        for row in query:
+            return [row.match_id, row.first_name, row.last_name, row.age, row.sex, row.city]
 
     def get_first_search(self, user_id):
-        self.offset = self.session.query(func.min(self.searchinglist.id)).filter(self.searchinglist.user_id ==
-                                                                                 str(user_id)).all()[0][0]
-        result = self.__query_searching_list()
-        return result
+        index = self.session.query(self.user.first).filter(self.user.vk_id == str(user_id)).all()
+        return self.__query_searching_list(index[0][0])
+
 
     """Выдает следующее соответствие"""
 
-    def get_next_search(self):
-        if self.offset != self.last:
-            self.offset += 1
-            result = self.__query_searching_list()
-            return result
-        return 'no more'
+    def get_next_search(self, user_id):
+        self.session.query(self.user).filter(self.user.vk_id == str(user_id)).update({'actual': self.user.actual + 1})
+        self.session.commit()
+        index = self.session.query(self.user.actual).filter(self.user.vk_id == str(user_id)).all()
+        return self.__query_searching_list(index[0][0])
+
 
     """Выдает предыдущее соответствие"""
 
-    def get_previous_search(self):
-        if self.offset != 1 and self.offset != 0:
-            self.offset -= 1
-            result = self.__query_searching_list()
-            return result
-        return 'no more'
+    def get_previous_search(self, user_id):
+        first = self.session.query(self.user.first).filter(self.user.vk_id == str(user_id)).all()
+        actual = self.session.query(self.user.actual).filter(self.user.vk_id == str(user_id)).all()
+        print(first[0][0])
+        print(actual[0][0])
+        if first[0][0] >= actual[0][0]:
+            return 0
+        self.session.query(self.user).filter(self.user.vk_id == str(user_id)).update({'actual': self.user.actual - 1})
+        self.session.commit()
+        index = self.session.query(self.user.actual).filter(self.user.vk_id == str(user_id)).all()
+        return self.__query_searching_list(index[0][0])
 
     """Добавляет пользователя в БД"""
 
