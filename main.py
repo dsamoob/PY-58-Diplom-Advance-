@@ -112,5 +112,3 @@ if __name__ == '__main__':
 
                 elif msg.split('_')[0] == 'deletef':
                     dbapp.del_favorite(user_id, msg.split('_')[1])
-
-
