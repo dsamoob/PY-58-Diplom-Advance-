@@ -2,8 +2,8 @@ from datetime import datetime
 import requests
 import vk_api
 from vk_api.longpoll import VkLongPoll, VkEventType
+from vk_api.keyboard import VkKeyboard, VkKeyboardColor
 import time
-import json
 
 class VKapp:
     def __init__(self, token_user, tokenVK_Group, version='5.131'):
@@ -18,8 +18,18 @@ class VKapp:
         self.longpoll = VkLongPoll(self.vk)  # РАБОТА С СООБЩЕНИЯМИ
         self.dict_cash = {}
 
-    def send_msg(self, user_id, some_text):
-        self.vk_session.method("messages.send", {"user_id": user_id, "message": some_text, "random_id": 0})
+        self.key_start = VkKeyboard(one_time=True)
+        self.key_start.add_button(label='search', color=VkKeyboardColor.PRIMARY)
+    def send_msg(self, user_id, message, keyboard=None, attachment=None):
+        self.vk_session.method("messages.send", {"user_id": user_id,
+                                                 "message": message,
+                                                 "random_id": 0,
+                                                 'keyboard': keyboard,
+                                                 'attachment': attachment})
+
+    def start(self, user_id):
+        message='f'
+        self.send_msg(user_id=user_id, message=message, keyboard=self.key_start.get_keyboard())
 
     def users_info(self, user_id):
         response = self.dict_cash.get(user_id)

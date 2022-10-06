@@ -25,6 +25,7 @@ if __name__ == '__main__':
                 dbapp.add_user(user_id)
                 send_kb(user_id, msg.lower())
                 if msg in ['hi', 'hello', 'good day', 'привет', 'хай']:
+                    vkapp.start(user_id)
                     vkapp.send_msg(user_id, 'привет!')
                 elif msg == 'name':
                     vkapp.send_msg(user_id, vkapp.get_name(user_id))
