@@ -9,8 +9,8 @@ Base = declarative_base()
 class SearchingList(Base):
     __tablename__ = "searching_list"
     id = sq.Column(sq.Integer, primary_key=True)
-    user_id = sq.Column(sq.String(length=20))
-    match_id = sq.Column(sq.String(length=20), unique=True)
+    user_id = sq.Column(sq.Integer)
+    match_id = sq.Column(sq.Integer)
     first_name = sq.Column(sq.String(length=50))
     last_name = sq.Column(sq.String(length=50))
     sex = sq.Column(sq.String(length=10))
@@ -25,7 +25,7 @@ class User(Base):
     __tablename__ = "user"
 
     id = sq.Column(sq.Integer, primary_key=True)
-    vk_id = sq.Column(sq.String(length=80), unique=True)
+    vk_id = sq.Column(sq.Integer, unique=True)
     first = sq.Column(sq.Integer)
     actual = sq.Column(sq.Integer)
     last = sq.Column(sq.Integer)
@@ -41,7 +41,7 @@ class Match(Base):
     __tablename__ = "match"
 
     id = sq.Column(sq.Integer, primary_key=True)
-    vk_id = sq.Column(sq.String(length=20), unique=True)
+    vk_id = sq.Column(sq.Integer, unique=True)
     first_name = sq.Column(sq.String(length=50))
     last_name = sq.Column(sq.String(length=50))
     sex = sq.Column(sq.String(length=20))
@@ -76,4 +76,6 @@ class UnFavoriteList(Base):
 
 def create_tables(engine):
     Base.metadata.drop_all(engine)
+    print(f'БД: таблицы сброшены')
     Base.metadata.create_all(engine)
+    print(f'БД: таблицы созданы')

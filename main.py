@@ -15,7 +15,7 @@ dbapp = DBapp(session)
 vkapp = VKapp(token_user=config.vk_token_prog, token_vk_group=config.vk_token_my)
 
 if __name__ == '__main__':
-    # create_tables(engine)
+    create_tables(engine)
     for event in vkapp.longpoll.listen():
         if event.type == VkEventType.MESSAGE_NEW:
             if event.to_me:
@@ -44,11 +44,14 @@ if __name__ == '__main__':
                     vkapp.send_foto(user_id=user_id, user_id_foto=result[0])
                 elif msg == 'следующая':
                     result = dbapp.get_next_search(user_id)
-                    vkapp.send_msg(user_id,
-                                   f'{result[1]} {result[2]}\n'
-                                   f'https://vk.com/id{result[0]}\n'
-                                   )
-                    vkapp.send_foto(user_id=user_id, user_id_foto=result[0])
+                    if result != 0:
+                        vkapp.send_msg(user_id,
+                                       f'{result[1]} {result[2]}\n'
+                                       f'https://vk.com/id{result[0]}\n'
+                                       )
+                        vkapp.send_foto(user_id=user_id, user_id_foto=result[0])
+                    else:
+                        vkapp.send_msg(user_id, f'конец списка')
                 elif msg == 'предыдущая':
                     result = dbapp.get_previous_search(user_id)
                     if result != 0:
@@ -60,7 +63,7 @@ if __name__ == '__main__':
                     else:
                         vkapp.send_msg(user_id, f'до ничего, только следующая')
                 elif msg == 'в черный список':
-                    match_id = dbapp.get_user_id_by_id(dbapp.get_actual_index(user_id))
+                    match_id = dbapp.get_match_id_by_id(dbapp.get_actual_index(user_id))
                     dbapp.add_match(match_id)
                     dbapp.add_match_to_unfavorite(user_id, match_id)
                     result = dbapp.get_next_search(user_id)
@@ -70,7 +73,7 @@ if __name__ == '__main__':
                                    )
                     vkapp.send_foto(user_id=user_id, user_id_foto=result[0])
                 elif msg == 'в избранное':
-                    match_id = dbapp.get_user_id_by_id(dbapp.get_actual_index(user_id))
+                    match_id = dbapp.get_match_id_by_id(dbapp.get_actual_index(user_id))
                     dbapp.add_match(match_id)
                     dbapp.add_match_to_favorite(user_id, match_id)
                     result = dbapp.get_next_search(user_id)
