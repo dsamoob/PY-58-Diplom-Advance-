@@ -212,8 +212,10 @@ class VKapp:
         return response
 
     def send_foto(self, user_id, user_id_foto, message=''):
+        photos = ''
         for key, value in self.foto_dict(user_id_foto).items():
-            self.vk.method('messages.send', {'user_id': user_id,
-                                             'message': message,
-                                             'attachment': f'photo{value}',
-                                             'random_id': 0})
+            photos += f'photo{value},'
+        self.vk.method('messages.send', {'user_id': user_id,
+                                         'message': message,
+                                         'attachment': f'{photos}',
+                                         'random_id': 0})
