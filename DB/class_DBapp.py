@@ -104,6 +104,14 @@ class DBapp:
 
     """Добавляет пользователя в БД"""
 
+    def get_actual_index(self, user_id):
+        actual = self.session.query(self.user.actual).filter(self.user.vk_id == str(user_id)).one()
+        return actual[0]
+
+    def get_user_id_by_id(self, id):
+        result = self.session.query(self.searchinglist.match_id).filter(self.searchinglist.id == id).one()
+        return result[0]
+
     def add_user(self, user_id):
         user_id = str(user_id)
         try:
@@ -192,7 +200,7 @@ class DBapp:
 
     """Удаляет из списка избранных"""
 
-    def del_favorite(self, user_id, match_id):
+    def del_from_favorite(self, user_id, match_id):
         upk = self.__get_user_pk(user_id)
         mpk = self.__get_match_pk(match_id)
         self.session.query(self.favoritelist).filter(
@@ -201,7 +209,7 @@ class DBapp:
 
     """Удаляет из черного списка"""
 
-    def del_unfavorite(self, user_id, match_id):
+    def del_from_unfavorite(self, user_id, match_id):
         upk = self.__get_user_pk(user_id)
         mpk = self.__get_match_pk(match_id)
         self.session.query(self.unfavoritelist).filter(

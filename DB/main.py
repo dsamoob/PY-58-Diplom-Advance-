@@ -28,7 +28,7 @@ if __name__ == '__main__':
     dbapp.add_match_to_unfavorite(user_id, 380944656)
     print('список избранных', dbapp.get_favorite_list(user_id))
     print('список черных', dbapp.get_unfavorite_list(user_id))
-    dbapp.del_favorite(user_id, 147707590)  # удаление из списка избранных
-    dbapp.del_unfavorite(user_id, 380944656)
+    dbapp.del_from_favorite(user_id, 147707590)  # удаление из списка избранных
+    dbapp.del_from_unfavorite(user_id, 380944656)
     print('список избранных после удаления', dbapp.get_favorite_list(user_id))
     print('список черных после удаления', dbapp.get_unfavorite_list(user_id))

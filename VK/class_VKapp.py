@@ -1,25 +1,36 @@
 from datetime import datetime
 import requests
 import vk_api
-from vk_api.longpoll import VkLongPoll, VkEventType
+from vk_api.longpoll import VkLongPoll
 from vk_api.keyboard import VkKeyboard, VkKeyboardColor
 import time
 
+
 class VKapp:
-    def __init__(self, token_user, tokenVK_Group, version='5.131'):
+    def __init__(self, token_user, token_vk_group, version='5.131'):
         self.token_user = token_user
-        self.tokenVK_Group = tokenVK_Group
+        self.tokenVK_Group = token_vk_group
         self.version = version
         self.paramsVK_Group = {'access_token': self.tokenVK_Group, 'v': self.version}
         self.params_User = {'access_token': self.token_user, 'v': self.version}
-        self.vk = vk_api.VkApi(token=tokenVK_Group)  # АВТОРИЗАЦИЯ СООБЩЕСТВА
-        self.vk_session = vk_api.VkApi(token=tokenVK_Group)
+        self.vk = vk_api.VkApi(token=token_vk_group)  # АВТОРИЗАЦИЯ СООБЩЕСТВА
+        self.vk_session = vk_api.VkApi(token=token_vk_group)
         self.session_api = self.vk_session.get_api()
         self.longpoll = VkLongPoll(self.vk)  # РАБОТА С СООБЩЕНИЯМИ
         self.dict_cash = {}
-
+        """стартовое меню"""
         self.key_start = VkKeyboard(one_time=True)
-        self.key_start.add_button(label='search', color=VkKeyboardColor.PRIMARY)
+        self.key_start.add_button(label='Начали', color=VkKeyboardColor.PRIMARY)
+        """постоянное меню"""
+        self.key_fix = VkKeyboard(one_time=False)
+        self.key_fix.add_button(label='Предыдущая', color=VkKeyboardColor.PRIMARY)
+        self.key_fix.add_button(label='В черный список', color=VkKeyboardColor.NEGATIVE)
+        self.key_fix.add_button(label='В избранное', color=VkKeyboardColor.POSITIVE)
+        self.key_fix.add_button(label='Следующая', color=VkKeyboardColor.PRIMARY)
+        self.key_fix.add_line()
+        self.key_fix.add_button(label='Черный список', color=VkKeyboardColor.PRIMARY)
+        self.key_fix.add_button(label='Список избранного', color=VkKeyboardColor.PRIMARY)
+
     def send_msg(self, user_id, message, keyboard=None, attachment=None):
         self.vk_session.method("messages.send", {"user_id": user_id,
                                                  "message": message,
@@ -27,9 +38,22 @@ class VKapp:
                                                  'keyboard': keyboard,
                                                  'attachment': attachment})
 
-    def start(self, user_id):
-        message='f'
+    """стартовая кнопка"""
+    def start(self, user_id, message):
         self.send_msg(user_id=user_id, message=message, keyboard=self.key_start.get_keyboard())
+    """меню после нажатия кнопки Начали"""
+    def message_after(self, user_id, message):
+        self.send_msg(user_id=user_id, message=message, keyboard=self.key_fix.get_keyboard())
+    """прикрепленная кнопка удаления к перечислению списка избранных"""
+    def message_del_favorite(self, user_id, message, vk_id):
+        key_temp = VkKeyboard(inline=True)
+        key_temp.add_button(label=f'Удалить избранное_{vk_id}', color=VkKeyboardColor.NEGATIVE)
+        self.send_msg(user_id=user_id, message=message, keyboard=key_temp.get_keyboard())
+    """ прикрепленная кнопка удаления к перечислению черного списка"""
+    def message_del_unfavorite(self, user_id, message, vk_id):
+        key_temp = VkKeyboard(inline=True)
+        key_temp.add_button(label=f'Удалить черное_{vk_id}', color=VkKeyboardColor.NEGATIVE)
+        self.send_msg(user_id=user_id, message=message, keyboard=key_temp.get_keyboard())
 
     def users_info(self, user_id):
         response = self.dict_cash.get(user_id)
@@ -68,7 +92,7 @@ class VKapp:
         else:
             self.send_msg(user_id, 'Сколько Вам лет: ')
             for event in self.longpoll.listen():
-                if  event.to_me:
+                if event.to_me:
                     age = event.text.lower()
                     try:
                         a = int(age)
@@ -169,8 +193,6 @@ class VKapp:
             print(len(tot_dict))
             return tot_dict
 
-
-
     def search_user(self, user_id, down_age=1, up_age=1, count=1000):  # Вывод найденных пользователе
         """ПОИСК ПОЛЬЗОВАТЕЛЯ ПО ДАННЫМ"""
         age = self.get_age(user_id)
@@ -189,11 +211,9 @@ class VKapp:
         response = requests.get(url, params={**self.params_User, **params}).json()
         return response
 
-
     def send_foto(self, user_id, user_id_foto, message=''):
         for key, value in self.foto_dict(user_id_foto).items():
             self.vk.method('messages.send', {'user_id': user_id,
-                                                 'message': message,
-                                                 'attachment': f'photo{value}',
-                                                 'random_id': 0})
-
+                                             'message': message,
+                                             'attachment': f'photo{value}',
+                                             'random_id': 0})
