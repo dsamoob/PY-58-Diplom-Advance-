@@ -6,7 +6,6 @@ from DB.class_DBapp import DBapp
 from DB.db_models import create_tables
 from VK.class_VKapp import VKapp
 
-
 command_list = ['name', 'adge', 'city', 'sex', 'начали', 'сдедующая', 'предыдущая', 'предыдущая', 'в черный список',
                 'в избранное', 'список избранного', 'черный список', 'удалить черное', 'удалить избранное']
 DSN = f'postgresql://{config.db_login}:{config.db_password}@localhost:5432/{config.db_name}'
@@ -17,16 +16,13 @@ session = Session()
 dbapp = DBapp(session)
 vkapp = VKapp(token_user=config.vk_token_prog, token_vk_group=config.vk_token_my)
 
-
-
 if __name__ == '__main__':
-    # create_tables(engine)
     for event in vkapp.longpoll.listen():
         if event.type == VkEventType.MESSAGE_NEW:
             if event.to_me:
                 msg = event.text.lower()
                 user_id = event.user_id  # определние ид пользователя
-                if msg == 'начали':
+                if msg in ['начали', 'обновить']:
                     dbapp.add_to_searching_list(vkapp.total_dict(user_id), user_id)
                     dbapp.set_user_log(user_id)  # заполняет лог для пользователя
                     result = dbapp.get_first_search(user_id)  # выдает первое совпадения для пользователя не меняя лог
@@ -86,8 +82,10 @@ if __name__ == '__main__':
                                                               f'https://vk.com/id{item[0]}\n', item[0])
                 elif msg.split('_')[0] == 'удалить черное':
                     dbapp.del_from_unfavorite(user_id, msg.split('_')[1])
+                    vkapp.send_msg(user_id, f"{msg.split('_')[1]} удален из черного списка")
                 elif msg.split('_')[0] == 'удалить избранное':
                     dbapp.del_from_favorite(user_id, msg.split('_')[1])
+                    vkapp.send_msg(user_id, f"{msg.split('_')[1]} удален из списка избранных списка")
                 elif msg not in command_list:  # любое входящее сообщение не входящее в список команд
                     result = dbapp.add_user(user_id)  # добавление/нахождение пользователя в бд
                     if result == 1:  # если пользователь заходит первый раз

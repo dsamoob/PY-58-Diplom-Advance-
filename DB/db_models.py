@@ -79,3 +79,4 @@ def create_tables(engine):
     print(f'БД: таблицы сброшены')
     Base.metadata.create_all(engine)
     print(f'БД: таблицы созданы')
+

@@ -29,12 +29,6 @@ class DBapp:
         self.session.commit()
         print(f'БД __del_from_sl_user: поисковая таблица для {user_id} очищена')
 
-    def __del_from_sl_match(self, user_id: int, match_id: int):
-        self.session.query(self.searchinglist).filter(
-            self.searchinglist.user_id == user_id).where(
-            self.searchinglist.match_id == match_id).delete()
-        self.session.commit()
-
 
     """Формирает список вк ид из черного списка и списка избранных"""
 
@@ -208,8 +202,6 @@ class DBapp:
 
     """Добавляет в список избранных ПК пользователя и ПК соотвествия"""
 
-
-
     def add_match_to_favorite(self, user_id: int, match_id: int):
         upk = self.__get_user_pk(user_id)
         mpk = self.__get_match_pk(match_id)
@@ -217,7 +209,6 @@ class DBapp:
                                 id_match=mpk)
         self.session.add(add)
         self.session.commit()
-        self.__del_from_sl_match(user_id, match_id)
         print(f'БД add_match_to_favorite: в список избранных для пользователя {user_id} добавлен {match_id}')
 
     """Добавляет в черный список ПК пользовтеля и ПК соотвествия"""
@@ -229,7 +220,6 @@ class DBapp:
                                   id_match=mpk)
         self.session.add(add)
         self.session.commit()
-        self.__del_from_sl_match(user_id, match_id)
         print(f'БД add_match_to_unfavorite: в список черных для пользователя {user_id} добавлен {match_id}')
 
     """Выдает список избранных по пользовтелю"""
@@ -275,4 +265,5 @@ class DBapp:
         self.session.query(self.unfavoritelist).filter(
             self.unfavoritelist.id_user == upk).where(self.unfavoritelist.id_match == mpk).delete()
         self.session.commit()
+
         print(f'БД del_from_unfavorite: {match_id} для пользователя {user_id} удален из черного списка')

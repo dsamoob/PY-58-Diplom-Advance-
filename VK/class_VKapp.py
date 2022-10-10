@@ -30,6 +30,7 @@ class VKapp:
         self.key_fix.add_button(label='Следующая', color=VkKeyboardColor.PRIMARY)
         self.key_fix.add_line()
         self.key_fix.add_button(label='Черный список', color=VkKeyboardColor.PRIMARY)
+        self.key_fix.add_button(label='Обновить', color=VkKeyboardColor.POSITIVE)
         self.key_fix.add_button(label='Список избранного', color=VkKeyboardColor.PRIMARY)
 
     def send_msg(self, user_id, message, keyboard=None, attachment=None):
@@ -215,6 +216,7 @@ class VKapp:
         photos = ''
         for key, value in self.foto_dict(user_id_foto).items():
             photos += f'photo{value},'
+        print(photos)
         self.vk.method('messages.send', {'user_id': user_id,
                                          'message': message,
                                          'attachment': f'{photos}',
