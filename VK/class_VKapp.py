@@ -4,7 +4,8 @@ import vk_api
 from vk_api.longpoll import VkLongPoll
 from vk_api.keyboard import VkKeyboard, VkKeyboardColor
 import time
-
+import json
+import pprint
 
 class VKapp:
     def __init__(self, token_user, token_vk_group, version='5.131'):
@@ -176,7 +177,6 @@ class VKapp:
         response = self.search_user(user_id)
         if response.get('response') is not None:
             print(len(response['response']['items']))
-            # pprint(response)
             for serch_user in response['response']['items']:
                 if (serch_user['is_closed'] == False) and (serch_user.get('bdate') is not None):
                     if len(serch_user.get('bdate').split('.')) > 2:
