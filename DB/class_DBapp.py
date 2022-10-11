@@ -34,9 +34,16 @@ class DBapp:
 
     def __ids_from_lists(self, user_id: int) -> list:
         check_list = []  #
-        for item in self.get_favorite_list(user_id):
+        fav_list = self.get_favorite_list(user_id)
+        unfav_list = self.get_unfavorite_list(user_id)
+        if fav_list == 0:
+            fav_list = []
+        if unfav_list == 0:
+            unfav_list = []
+
+        for item in fav_list:
             check_list.append(item[0])
-        for item in self.get_unfavorite_list(user_id):
+        for item in unfav_list:
             check_list.append(item[0])
         print(
             f'БД __ids_from_lists: сформирован список длинной {len(check_list)} ид из черного и белого списков для пользователя {user_id}')
@@ -77,7 +84,9 @@ class DBapp:
 
     """Устанавливает и возвращает первое соответствие для пользователя и выдает его"""
 
-
+    def get_all_id(self, user_id):
+        result = self.session.query(self.searchinglist.match_id).filter(self.searchinglist.user_id==user_id).all()
+        return result
     def get_match(self, index: int) -> list:
         query = self.session.query(self.searchinglist).filter(self.searchinglist.id == index)
         for row in query:
@@ -228,11 +237,15 @@ class DBapp:
         favorite_list = []
         pk = self.__get_user_pk(user_id)
         favorites = [i.id_match for i in self.session.query(self.favoritelist).filter(self.favoritelist.id_user == pk)]
-        for item in favorites:
-            for row in self.session.query(self.match).filter(self.match.id == item).all():
-                favorite_list.append([row.vk_id, row.first_name, row.last_name, row.sex, row.age, row.city])
+        if favorites:
+            for item in favorites:
+                for row in self.session.query(self.match).filter(self.match.id == item).all():
+                    favorite_list.append([row.vk_id, row.first_name, row.last_name, row.sex, row.age, row.city])
         print(f'БД get_favorite_list: получен список избранных для пользователя {user_id} длинной {len(favorites)}')
-        return favorite_list
+        if favorite_list:
+            return favorite_list
+        return 0
+
 
     """Выдает черный список по пользовтелю"""
 
@@ -245,7 +258,9 @@ class DBapp:
             for row in self.session.query(self.match).filter(self.match.id == item).all():
                 unfavorite_list.append([row.vk_id, row.first_name, row.last_name, row.sex, row.age, row.city])
         print(f'БД get_unfavorite_list: получен черный список для пользователя {user_id} длинной {len(favorites)}')
-        return unfavorite_list
+        if unfavorite_list:
+            return unfavorite_list
+        return 0
 
     """Удаляет из списка избранных"""
 

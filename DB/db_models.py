@@ -4,8 +4,6 @@ from sqlalchemy.orm import declarative_base
 Base = declarative_base()
 
 """ отдельная таблица для прохода по найденым результатам"""
-
-
 class SearchingList(Base):
     __tablename__ = "searching_list"
     id = sq.Column(sq.Integer, primary_key=True)
@@ -19,8 +17,6 @@ class SearchingList(Base):
 
 
 """таблица пользователей"""
-
-
 class User(Base):
     __tablename__ = "user"
 
@@ -30,13 +26,8 @@ class User(Base):
     actual = sq.Column(sq.Integer)
     last = sq.Column(sq.Integer)
 
-    def __str__(self):
-        return f'{self.id}: {self.user_vk_id}: {self.first}: {self.actual}: {self.last}'
-
 
 """таблица соотвествий, которые добавлялись в черный и/или белый списки"""
-
-
 class Match(Base):
     __tablename__ = "match"
 
@@ -48,13 +39,8 @@ class Match(Base):
     age = sq.Column(sq.String(length=10))
     city = sq.Column(sq.String(length=50))
 
-    def __str__(self):
-        return f'{self.id}: {self.vk_id}'
-
 
 """Список избранных по пользователям"""
-
-
 class FavoriteList(Base):
     __tablename__ = "favorite_list"
 
@@ -64,8 +50,6 @@ class FavoriteList(Base):
 
 
 """черный список по пользователям"""
-
-
 class UnFavoriteList(Base):
     __tablename__ = "unfavorite_list"
 

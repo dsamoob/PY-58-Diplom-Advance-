@@ -143,41 +143,66 @@ class VKapp:
         except KeyError:
             self.send_msg(user_id, 'Ошибка токена')
 
-    def user_foto(self, user_id, album='profile', offset=0):
+    def get_all(self, match_id: int, offset=0) -> (int, dict):
+        url = 'https://api.vk.com/method/photos.getAll'
+        params = {'owner_id': match_id, 'extended': '1', 'photo_sizes': '1', 'offset': offset}
+        response = requests.get(url, params={**self.params_User, **params}).json()
+        result = response['response']['count']
+        print(f'ВК get_all: получен json всех фотографий')
+        return (result, response)
+
+    def get_first(self, match_id: int, offset=0) -> (int, dict):
         url = 'https://api.vk.com/method/photos.get'
-        params = {'owner_id': user_id, 'album_id': album, 'extended': '1', 'photo_sizes': '1', 'offset': offset}
-        response = requests.get(url, params={**self.params_User, **params})
-        time.sleep(0.3)
-        return response.json()
+        params = {'owner_id': match_id, 'album_id': "profile", 'extended': '1', 'photo_sizes': '1', 'offset': offset}
+        response = requests.get(url, params={**self.params_User, **params}).json()
+        result = response['response']['count']
+        print(f'ВК get_first: получен json фотографий по альбому profile')
+        return (result, response)
 
-    def foto_dict(self, user_id, list_album='profile'):  # словарь вида {like:owenID_fotoID}
-        dict_foto = {}
-        print(f'Ищем фото{user_id}')
-        album = list_album
-        # for album in list_album:  # альбомы на стене и в профайле
-        offset = 0
-        total = (self.user_foto(user_id, album))['response']['count']
-        while True:
-            user_foto = self.user_foto(user_id, album, offset)
-            for item in (user_foto['response']['items']):  # заходим в гр. фотографий
-                like = item['likes']['count']
-                post_id = item['id']
-                max_size = 0
-                dict_foto[like] = f"{user_id}_{item['id']}"
-            offset += len(user_foto['response']['items'])
-            if offset >= user_foto['response']['count']:
-                break
-        sort_key = sorted(dict_foto, reverse=True)
-        sort_dict = {x: dict_foto[x] for x in sort_key}
-        while len(sort_dict) > 3:
-            sort_dict.popitem()
-        return sort_dict
+    def send_photo(self, user_id: int, match_id: int, message=''):
+        photos = ''
+        result = self.photo_dic(match_id).items()
+        if result == 0:
+            return 0
+        for key, value in self.photo_dic(match_id).items():
+            photos += f'{value},'
+        self.vk.method('messages.send', {'user_id': user_id,
+                                         'message': message,
+                                         'attachment': f'{photos}',
+                                         'random_id': 0})
+        print(f'ВК фотографии отправлены')
+    def photo_dic(self, match_id:int ) -> dict:
+        result = self.user_photo(match_id)
+        dic = {}
+        if result != 0:
+            for i in result['response']['items']:
+                dic[i["likes"]["count"]] = f'photo{i["owner_id"]}_{i["id"]}'
+            if len(dic) >= 3:
+                print(f'ВК возвращены 3 фотографии с наибольшим количеством лайков')
+                return {x: dic[x] for x in sorted(dic)[::-1][0:3]}
+        return 0
 
-    def total_dict(self, user_id):
+    def user_photo(self, match_id: int) -> dict:
+        result_pro = self.get_first(match_id)
+        result_all = self.get_all(match_id)
+        if result_pro[0] in [0, 1]:
+            if result_all[0] < 500:
+                print(f'ВК user_photo: фотографий у пользователя менее 500 из photos.getAll')
+                return result_all[1]
+            else:
+                print(f'ВК user_photo фотографий слишком много ')
+                return 0
+        elif result_pro[0] < 500:
+            print(f'ВК user_photo: фотографий у пользователя менее 500 из photos.get(Profile)')
+            return result_pro[1]
+        print(f'ВК user_photo фотографий слишком много ')
+        return 0
+
+    def total_dict(self, user_id: int) -> dict:
         tot_dict = {}
         response = self.search_user(user_id)
         if response.get('response') is not None:
-            print(len(response['response']['items']))
+            print(f'ВК total_dict: входящий массив совпадений {len(response["response"]["items"])}')
             for serch_user in response['response']['items']:
                 if (serch_user['is_closed'] == False) and (serch_user.get('bdate') is not None):
                     if len(serch_user.get('bdate').split('.')) > 2:
@@ -191,18 +216,19 @@ class VKapp:
                             'age': datetime.now().year - datetime.strptime(serch_user['bdate'], '%d.%m.%Y').year,
                             'city': city_title
                         }
-            print(len(tot_dict))
+            print(f'ВК total_dict: обработанный масив для загрузки {len(tot_dict)}')
             return tot_dict
 
-    def search_user(self, user_id, down_age=1, up_age=1, count=1000):  # Вывод найденных пользователе
+    def search_user(self, user_id: int, down_age=1, up_age=1, count=1000) -> dict:  # Вывод найденных пользователе
         """ПОИСК ПОЛЬЗОВАТЕЛЯ ПО ДАННЫМ"""
         age = self.get_age(user_id)
+        city = self.get_id_city(user_id)
         url = f'https://api.vk.com/method/users.search'
         params = {
             'sex': self.get_reverse_sex(user_id),
             'age_from': age - down_age,
             'age_to': age + up_age,
-            'city': self.get_id_city(user_id),
+            'city': city,
             'status': '1' or '6',
             'has_photo': '1',
             'sort': '0',
@@ -212,12 +238,4 @@ class VKapp:
         response = requests.get(url, params={**self.params_User, **params}).json()
         return response
 
-    def send_foto(self, user_id, user_id_foto, message=''):
-        photos = ''
-        for key, value in self.foto_dict(user_id_foto).items():
-            photos += f'photo{value},'
-        print(photos)
-        self.vk.method('messages.send', {'user_id': user_id,
-                                         'message': message,
-                                         'attachment': f'{photos}',
-                                         'random_id': 0})
+
